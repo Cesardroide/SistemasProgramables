@@ -4,39 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mi Página Sencilla</title>
-  <style>
-    body {
-      background-color: lightblue;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 50px;
-    }
-
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>ola Bienvenido a mi página</h1>
+  <h1> Chinhga tu madre jose</h1>
   <p>Presiona el botón para cambiar el color de fondo.</p>
   <button id="miBoton">Cambiar color</button>
 
-  <script>
-    const boton = document.getElementById("miBoton");
-
-    boton.addEventListener("click", () => {
-      const colores = ["lightblue", "lightgreen", "lightpink", "lightyellow"];
-      const colorActual = document.body.style.backgroundColor;
-      let nuevoColor = colores[Math.floor(Math.random() * colores.length)];
-      while(nuevoColor === colorActual) {
-        nuevoColor = colores[Math.floor(Math.random() * colores.length)];
-      }
-      document.body.style.backgroundColor = nuevoColor;
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
 
