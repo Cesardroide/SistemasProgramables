@@ -12,8 +12,13 @@ if (!currentUser) {
       return;
     }
     
-    // Mostrar email del usuario
-    document.getElementById('userEmail').textContent = `📧 ${currentUser.getUsername()}`;
+    // Obtener email del usuario
+    const email = currentUser.getUsername();
+    document.getElementById('userEmail').textContent = email;
+    
+    // Obtener primera letra para el avatar
+    const firstLetter = email.charAt(0).toUpperCase();
+    document.getElementById('userAvatar').textContent = firstLetter;
   });
 }
 

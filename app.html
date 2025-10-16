@@ -3,21 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mi Aplicación</title>
+  <title>Mi Aplicación - Dashboard</title>
   <link rel="stylesheet" href="app-styles.css">
 </head>
 <body>
-  <div class="container">
-    <div class="app-content">
-      <h2>🎉 ¡Bienvenido!</h2>
-      <div class="user-info">
-        <p><strong>✅ Sesión iniciada correctamente</strong></p>
-        <p id="userEmail">Cargando...</p>
+  <!-- Header con info de usuario -->
+  <header class="header">
+    <div class="user-badge">
+      <div class="avatar" id="userAvatar">?</div>
+      <div class="user-info-header">
+        <strong id="userEmail">Cargando...</strong>
+        <span class="status-badge">✓ Sesión Activa</span>
       </div>
-      <button id="changeColorBtn">🎨 Cambiar Color de Fondo</button>
-      <button id="logoutBtn">🚪 Cerrar Sesión</button>
     </div>
-  </div>
+    <button class="logout-btn" id="logoutBtn">🚪 Cerrar Sesión</button>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="main-content">
+    <div class="hero">
+      <h1>🎉 ¡Bienvenido a tu Dashboard!</h1>
+      <p class="welcome-text">
+        Has iniciado sesión exitosamente. Desde aquí puedes acceder a todas las funcionalidades de tu aplicación.
+      </p>
+
+      <div class="action-cards">
+        <div class="card" id="changeColorBtn">
+          <div class="card-icon">🎨</div>
+          <h3>Cambiar Tema</h3>
+          <p>Personaliza el color de fondo de tu aplicación</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">📊</div>
+          <h3>Estadísticas</h3>
+          <p>Próximamente: Ver tus métricas y análisis</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">⚙️</div>
+          <h3>Configuración</h3>
+          <p>Próximamente: Ajusta tus preferencias</p>
+        </div>
+      </div>
+    </div>
+  </main>
 
   <!-- AWS Cognito SDK -->
   <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.7/dist/amazon-cognito-identity.min.js"></script>
