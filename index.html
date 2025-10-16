@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Página con Login AWS Cognito</title>
-  
+  <title>Mi Página - Bienvenido</title>
   <style>
     * {
       margin: 0;
@@ -22,500 +21,87 @@
       padding: 20px;
     }
 
-    .container {
-      background: white;
-      padding: 40px;
-      border-radius: 15px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-      max-width: 450px;
-      width: 100%;
+    .hero {
+      text-align: center;
+      color: white;
+      max-width: 700px;
     }
 
     h1 {
-      color: #333;
-      margin-bottom: 10px;
-      text-align: center;
-      font-size: 2rem;
-    }
-
-    .subtitle {
-      color: #666;
-      text-align: center;
-      margin-bottom: 30px;
-      font-size: 0.9rem;
-    }
-
-    .form-group {
+      font-size: 3.5rem;
       margin-bottom: 20px;
+      text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
     }
 
-    label {
-      display: block;
-      color: #333;
-      margin-bottom: 8px;
+    p {
+      font-size: 1.3rem;
+      margin-bottom: 40px;
+      text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 15px 40px;
+      font-size: 1.1rem;
       font-weight: bold;
-      font-size: 0.9rem;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px 15px;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: border-color 0.3s;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
       border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: bold;
+      border-radius: 50px;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      margin-top: 10px;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-    }
-
-    button:active {
-      transform: translateY(0);
-    }
-
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .toggle-form {
-      text-align: center;
-      margin-top: 20px;
-      color: #666;
-      font-size: 0.9rem;
-    }
-
-    .toggle-form a {
-      color: #667eea;
       text-decoration: none;
-      font-weight: bold;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: inline-block;
     }
 
-    .toggle-form a:hover {
-      text-decoration: underline;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .message {
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      text-align: center;
-      font-size: 0.9rem;
-    }
-
-    .error {
-      background-color: #fee;
-      color: #c33;
-      border: 1px solid #fcc;
-    }
-
-    .success {
-      background-color: #efe;
-      color: #3c3;
-      border: 1px solid #cfc;
-    }
-
-    .app-content {
-      text-align: center;
-    }
-
-    .app-content h2 {
-      color: #333;
-      margin-bottom: 20px;
-    }
-
-    .user-info {
-      background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 25px;
-      color: #333;
-    }
-
-    .user-info strong {
+    .btn-primary {
+      background: white;
       color: #667eea;
     }
 
-    #changeColorBtn {
-      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-      margin-bottom: 10px;
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid white;
     }
 
-    #logoutBtn {
-      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
 
-    .loading {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid #667eea;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2.5rem;
+      }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+      p {
+        font-size: 1.1rem;
+      }
 
-    .password-requirements {
-      font-size: 0.8rem;
-      color: #666;
-      margin-top: 5px;
+      .buttons {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Formulario de Login/Registro -->
-  <div id="authContainer" class="container">
-    <h1>🔐 PAGINA SENCILLA</h1>
-    <p class="subtitle">Inicia sesión o regístrate para continuar</p>
-    
-    <div id="message"></div>
-
-    <!-- Formulario de Login -->
-    <form id="loginForm">
-      <div class="form-group">
-        <label for="loginEmail">📧 Email</label>
-        <input type="email" id="loginEmail" required placeholder="tu@email.com">
-      </div>
-      <div class="form-group">
-        <label for="loginPassword">🔒 Contraseña</label>
-        <input type="password" id="loginPassword" required placeholder="Tu contraseña">
-      </div>
-      <button type="submit" id="loginBtn">Iniciar Sesión</button>
-    </form>
-
-    <!-- Formulario de Registro -->
-    <form id="registerForm" class="hidden">
-      <div class="form-group">
-        <label for="registerEmail">📧 Email</label>
-        <input type="email" id="registerEmail" required placeholder="tu@email.com">
-      </div>
-      <div class="form-group">
-        <label for="registerPassword">🔒 Contraseña</label>
-        <input type="password" id="registerPassword" required minlength="8" placeholder="Mínimo 8 caracteres">
-        <div class="password-requirements">Mínimo 8 caracteres</div>
-      </div>
-      <div class="form-group">
-        <label for="confirmPassword">🔒 Confirmar Contraseña</label>
-        <input type="password" id="confirmPassword" required minlength="8" placeholder="Repite tu contraseña">
-      </div>
-      <button type="submit" id="registerBtn">Crear Cuenta</button>
-    </form>
-
-    <!-- Formulario de Verificación -->
-    <form id="verifyForm" class="hidden">
-      <div class="form-group">
-        <label for="verifyCode">✉️ Código de Verificación</label>
-        <input type="text" id="verifyCode" required placeholder="Revisa tu email">
-        <div class="password-requirements">Código de 6 dígitos enviado a tu email</div>
-      </div>
-      <button type="submit" id="verifyBtn">Verificar Email</button>
-    </form>
-
-    <div class="toggle-form">
-      <span id="toggleText">¿No tienes cuenta? </span>
-      <a href="#" id="toggleLink">Regístrate aquí</a>
+  <div class="hero">
+    <h1>🚀 Bienvenido</h1>
+    <p>Esta es tu landing page. Aquí puedes poner lo que quieras: información sobre tu proyecto, servicios, portafolio, etc.</p>
+    <div class="buttons">
+      <a href="login.html" class="btn btn-primary">Iniciar Sesión</a>
+      <a href="app.html" class="btn btn-secondary">Ver App</a>
     </div>
   </div>
-
-  <!-- Contenido de la App -->
-  <div id="appContainer" class="container hidden">
-    <div class="app-content">
-      <h2>🎉 ¡Bienvenido!</h2>
-      <div class="user-info">
-        <p><strong>✅ Sesión iniciada correctamente</strong></p>
-        <p id="userEmail"></p>
-      </div>
-      <button id="changeColorBtn">🎨 Cambiar Color de Fondo</button>
-      <button id="logoutBtn">🚪 Cerrar Sesión</button>
-    </div>
-  </div>
-
-  <!-- AWS Cognito Identity SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.7/dist/amazon-cognito-identity.min.js"></script>
-
-  <script>
-    // TU CONFIGURACIÓN DE COGNITO
-    const poolData = {
-      UserPoolId: 'us-east-1_juoZIaN09',
-      ClientId: '767u280f6hkmc7p28b3d0i0u5i'
-    };
-
-    const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-    
-    // Elementos del DOM
-    const authContainer = document.getElementById('authContainer');
-    const appContainer = document.getElementById('appContainer');
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-    const verifyForm = document.getElementById('verifyForm');
-    const toggleLink = document.getElementById('toggleLink');
-    const toggleText = document.getElementById('toggleText');
-    const message = document.getElementById('message');
-    
-    let isLoginMode = true;
-    let pendingUsername = null;
-
-    // Verificar si hay sesión activa
-    const currentUser = userPool.getCurrentUser();
-    if (currentUser) {
-      currentUser.getSession((err, session) => {
-        if (err) {
-          console.log('No hay sesión activa');
-          return;
-        }
-        if (session.isValid()) {
-          showApp(currentUser.getUsername());
-        }
-      });
-    }
-
-    // Toggle entre login y registro
-    toggleLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      isLoginMode = !isLoginMode;
-      
-      if (isLoginMode) {
-        loginForm.classList.remove('hidden');
-        registerForm.classList.add('hidden');
-        verifyForm.classList.add('hidden');
-        toggleText.textContent = '¿No tienes cuenta? ';
-        toggleLink.textContent = 'Regístrate aquí';
-      } else {
-        loginForm.classList.add('hidden');
-        registerForm.classList.remove('hidden');
-        verifyForm.classList.add('hidden');
-        toggleText.textContent = '¿Ya tienes cuenta? ';
-        toggleLink.textContent = 'Inicia sesión aquí';
-      }
-      clearMessage();
-    });
-
-    // Login
-    loginForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-      const btn = document.getElementById('loginBtn');
-      
-      btn.disabled = true;
-      btn.innerHTML = '<span class="loading"></span>';
-
-      const authenticationData = {
-        Username: email,
-        Password: password,
-      };
-      
-      const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
-      
-      const userData = {
-        Username: email,
-        Pool: userPool
-      };
-      
-      const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-      
-      cognitoUser.authenticateUser(authenticationDetails, {
-        onSuccess: (result) => {
-          showMessage('¡Inicio de sesión exitoso!', 'success');
-          setTimeout(() => showApp(email), 1000);
-        },
-        onFailure: (err) => {
-          console.error('Error:', err);
-          if (err.code === 'UserNotConfirmedException') {
-            showMessage('Por favor verifica tu email primero', 'error');
-            pendingUsername = email;
-            loginForm.classList.add('hidden');
-            verifyForm.classList.remove('hidden');
-          } else if (err.code === 'NotAuthorizedException') {
-            showMessage('Email o contraseña incorrectos', 'error');
-          } else {
-            showMessage('Error: ' + err.message, 'error');
-          }
-          btn.disabled = false;
-          btn.textContent = 'Iniciar Sesión';
-        }
-      });
-    });
-
-    // Registro
-    registerForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const email = document.getElementById('registerEmail').value;
-      const password = document.getElementById('registerPassword').value;
-      const confirmPassword = document.getElementById('confirmPassword').value;
-      const btn = document.getElementById('registerBtn');
-
-      if (password !== confirmPassword) {
-        showMessage('Las contraseñas no coinciden', 'error');
-        return;
-      }
-
-      if (password.length < 8) {
-        showMessage('La contraseña debe tener al menos 8 caracteres', 'error');
-        return;
-      }
-
-      btn.disabled = true;
-      btn.innerHTML = '<span class="loading"></span>';
-
-      const attributeList = [
-        new AmazonCognitoIdentity.CognitoUserAttribute({
-          Name: 'email',
-          Value: email
-        })
-      ];
-
-      userPool.signUp(email, password, attributeList, null, (err, result) => {
-        if (err) {
-          console.error('Error:', err);
-          if (err.code === 'UsernameExistsException') {
-            showMessage('Este email ya está registrado', 'error');
-          } else {
-            showMessage('Error: ' + err.message, 'error');
-          }
-          btn.disabled = false;
-          btn.textContent = 'Crear Cuenta';
-          return;
-        }
-        
-        pendingUsername = email;
-        showMessage('¡Cuenta creada! Revisa tu email para el código de verificación', 'success');
-        registerForm.classList.add('hidden');
-        verifyForm.classList.remove('hidden');
-        btn.disabled = false;
-        btn.textContent = 'Crear Cuenta';
-      });
-    });
-
-    // Verificación
-    verifyForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const code = document.getElementById('verifyCode').value;
-      const btn = document.getElementById('verifyBtn');
-
-      if (!pendingUsername) {
-        showMessage('Error: No hay usuario pendiente de verificación', 'error');
-        return;
-      }
-
-      btn.disabled = true;
-      btn.innerHTML = '<span class="loading"></span>';
-
-      const userData = {
-        Username: pendingUsername,
-        Pool: userPool
-      };
-
-      const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-
-      cognitoUser.confirmRegistration(code, true, (err, result) => {
-        if (err) {
-          console.error('Error:', err);
-          showMessage('Código incorrecto: ' + err.message, 'error');
-          btn.disabled = false;
-          btn.textContent = 'Verificar Email';
-          return;
-        }
-        
-        showMessage('¡Email verificado! Ahora puedes iniciar sesión', 'success');
-        setTimeout(() => {
-          verifyForm.classList.add('hidden');
-          loginForm.classList.remove('hidden');
-          isLoginMode = true;
-          toggleText.textContent = '¿No tienes cuenta? ';
-          toggleLink.textContent = 'Regístrate aquí';
-          document.getElementById('verifyCode').value = '';
-          btn.disabled = false;
-          btn.textContent = 'Verificar Email';
-        }, 2000);
-      });
-    });
-
-    // Cerrar sesión
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      const cognitoUser = userPool.getCurrentUser();
-      if (cognitoUser) {
-        cognitoUser.signOut();
-      }
-      authContainer.classList.remove('hidden');
-      appContainer.classList.add('hidden');
-      document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-      clearForms();
-    });
-
-    // Cambiar color
-    document.getElementById('changeColorBtn').addEventListener('click', () => {
-      const colors = [
-        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-        'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-        'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
-      ];
-      
-      const currentBg = document.body.style.background;
-      let newColor = colors[Math.floor(Math.random() * colors.length)];
-      
-      while (newColor === currentBg && colors.length > 1) {
-        newColor = colors[Math.floor(Math.random() * colors.length)];
-      }
-      
-      document.body.style.background = newColor;
-    });
-
-    function showApp(email) {
-      authContainer.classList.add('hidden');
-      appContainer.classList.remove('hidden');
-      document.getElementById('userEmail').textContent = `📧 ${email}`;
-    }
-
-    function showMessage(text, type) {
-      message.textContent = text;
-      message.className = `message ${type}`;
-    }
-
-    function clearMessage() {
-      message.textContent = '';
-      message.className = 'message';
-    }
-
-    function clearForms() {
-      loginForm.reset();
-      registerForm.reset();
-      verifyForm.reset();
-      clearMessage();
-    }
-  </script>
 </body>
 </html>

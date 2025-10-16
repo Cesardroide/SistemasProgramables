@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Aplicación</title>
+  <link rel="stylesheet" href="app-styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="app-content">
+      <h2>🎉 ¡Bienvenido!</h2>
+      <div class="user-info">
+        <p><strong>✅ Sesión iniciada correctamente</strong></p>
+        <p id="userEmail">Cargando...</p>
+      </div>
+      <button id="changeColorBtn">🎨 Cambiar Color de Fondo</button>
+      <button id="logoutBtn">🚪 Cerrar Sesión</button>
+    </div>
+  </div>
+
+  <!-- AWS Cognito SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.7/dist/amazon-cognito-identity.min.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
