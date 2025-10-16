@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-mipagina-dev-9c598-authRole",
+      "UnauthRoleArn": "arn:aws:iam::875388087986:role/amplify-mipagina-dev-9c598-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::875388087986:role/amplify-mipagina-dev-9c598-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-mipagina-dev-9c598-deployment",
+      "UnauthRoleName": "amplify-mipagina-dev-9c598-unauthRole",
+      "StackName": "amplify-mipagina-dev-9c598",
+      "StackId": "arn:aws:cloudformation:us-east-1:875388087986:stack/amplify-mipagina-dev-9c598/d6f11820-aac1-11f0-bc10-0afff91c1f23",
+      "AmplifyAppId": "d7nxbxvz1x0q4"
+    },
+    "categories": {
+      "auth": {
+        "mipagina0309f848": {}
+      }
+    }
+  }
+}

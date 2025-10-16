@@ -1,17 +1,166 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mi Página Sencilla</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Página con Login Amplify</title>
+  
+  <!-- Amplify UI CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/@aws-amplify/ui@5/dist/styles.css">
+  
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .app-container {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .user-info {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+
+    .user-info p {
+      color: #666;
+      margin: 10px 0;
+    }
+
+    button {
+      background-color: #667eea;
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 10px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #content {
+      display: none;
+    }
+
+    #content.show {
+      display: block;
+    }
+
+    /* Personalizar el formulario de Amplify */
+    amplify-authenticator {
+      --amplify-colors-background-primary: white;
+      --amplify-colors-brand-primary: #667eea;
+    }
+  </style>
 </head>
 <body>
-  <h1> PAGINA SENCILLA</h1>
-  <p>Presiona el botón para cambiar el color de fondo.</p>
-  <button id="miBoton">Cambiar color</button>
+  <!-- Amplify maneja TODO el login automáticamente -->
+  <amplify-authenticator>
+    <div class="app-container" id="content">
+      <h1>🎉 PAGINA SENCILLA</h1>
+      
+      <div class="user-info">
+        <p><strong>Has iniciado sesión correctamente</strong></p>
+        <p id="userEmail">Email: Cargando...</p>
+      </div>
 
-  <script src="script.js"></script>
+      <button id="changeColorBtn">Cambiar Color de Fondo</button>
+      <button onclick="signOut()">Cerrar Sesión</button>
+    </div>
+  </amplify-authenticator>
+
+  <!-- Amplify Libraries -->
+  <script src="https://unpkg.com/@aws-amplify/ui@5/dist/aws-amplify-ui.js"></script>
+  <script src="https://unpkg.com/aws-amplify@5/dist/aws-amplify.js"></script>
+
+  <script>
+    const { Amplify } = window.aws_amplify;
+    
+    // CONFIGURACIÓN CON TUS IDs REALES
+    Amplify.configure({
+      Auth: {
+        Cognito: {
+          userPoolId: 'us-east-1_juoZIaN09',
+          userPoolClientId: '767u280f6hkmc7p28b3d0i0u5i',
+          region: 'us-east-1'
+        }
+      }
+    });
+
+    // Detectar cuando el usuario inicia sesión
+    const authenticator = document.querySelector('amplify-authenticator');
+    const content = document.getElementById('content');
+    
+    authenticator.addEventListener('authStateChange', async (event) => {
+      if (event.detail === 'signedIn') {
+        content.classList.add('show');
+        
+        // Obtener info del usuario
+        try {
+          const { Amplify } = window.aws_amplify;
+          const user = await Amplify.Auth.getCurrentUser();
+          document.getElementById('userEmail').textContent = `Email: ${user.signInDetails.loginId}`;
+        } catch (error) {
+          console.log('Error obteniendo usuario:', error);
+          document.getElementById('userEmail').textContent = 'Usuario logueado';
+        }
+      } else {
+        content.classList.remove('show');
+      }
+    });
+
+    // Cambiar color de fondo
+    document.getElementById('changeColorBtn').addEventListener('click', () => {
+      const colors = ['linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+                      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                      'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                      'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                      'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'];
+      
+      const currentBg = document.body.style.background;
+      let newColor = colors[Math.floor(Math.random() * colors.length)];
+      
+      while (newColor === currentBg) {
+        newColor = colors[Math.floor(Math.random() * colors.length)];
+      }
+      
+      document.body.style.background = newColor;
+    });
+
+    // Función para cerrar sesión
+    async function signOut() {
+      const { Amplify } = window.aws_amplify;
+      await Amplify.Auth.signOut();
+    }
+  </script>
 </body>
 </html>
-
