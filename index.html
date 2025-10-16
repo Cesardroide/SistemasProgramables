@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Página con Login</title>
+  <title>Página con Login AWS Cognito</title>
   
   <style>
     * {
@@ -140,12 +140,6 @@
       border: 1px solid #cfc;
     }
 
-    .info {
-      background-color: #eef;
-      color: #33c;
-      border: 1px solid #ccf;
-    }
-
     .app-content {
       text-align: center;
     }
@@ -195,7 +189,6 @@
       font-size: 0.8rem;
       color: #666;
       margin-top: 5px;
-      padding-left: 5px;
     }
   </style>
 </head>
@@ -238,13 +231,23 @@
       <button type="submit" id="registerBtn">Crear Cuenta</button>
     </form>
 
+    <!-- Formulario de Verificación -->
+    <form id="verifyForm" class="hidden">
+      <div class="form-group">
+        <label for="verifyCode">✉️ Código de Verificación</label>
+        <input type="text" id="verifyCode" required placeholder="Revisa tu email">
+        <div class="password-requirements">Código de 6 dígitos enviado a tu email</div>
+      </div>
+      <button type="submit" id="verifyBtn">Verificar Email</button>
+    </form>
+
     <div class="toggle-form">
       <span id="toggleText">¿No tienes cuenta? </span>
       <a href="#" id="toggleLink">Regístrate aquí</a>
     </div>
   </div>
 
-  <!-- Contenido de la App (después del login) -->
+  <!-- Contenido de la App -->
   <div id="appContainer" class="container hidden">
     <div class="app-content">
       <h2>🎉 ¡Bienvenido!</h2>
@@ -257,45 +260,44 @@
     </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+  <!-- AWS Cognito Identity SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.7/dist/amazon-cognito-identity.min.js"></script>
 
-    // Configuración de Firebase (usa tu propia configuración)
-    const firebaseConfig = {
-      apiKey: "AIzaSyDummy-Key-Replace-With-Real",
-      authDomain: "tu-proyecto.firebaseapp.com",
-      projectId: "tu-proyecto-id",
-      storageBucket: "tu-proyecto.appspot.com",
-      messagingSenderId: "123456789",
-      appId: "1:123456789:web:abcdef123456"
+  <script>
+    // TU CONFIGURACIÓN DE COGNITO
+    const poolData = {
+      UserPoolId: 'us-east-1_juoZIaN09',
+      ClientId: '767u280f6hkmc7p28b3d0i0u5i'
     };
 
-    // Inicializar Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
+    const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+    
     // Elementos del DOM
     const authContainer = document.getElementById('authContainer');
     const appContainer = document.getElementById('appContainer');
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
+    const verifyForm = document.getElementById('verifyForm');
     const toggleLink = document.getElementById('toggleLink');
     const toggleText = document.getElementById('toggleText');
     const message = document.getElementById('message');
     
     let isLoginMode = true;
+    let pendingUsername = null;
 
-    // Verificar estado de autenticación
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        showApp(user);
-      } else {
-        authContainer.classList.remove('hidden');
-        appContainer.classList.add('hidden');
-      }
-    });
+    // Verificar si hay sesión activa
+    const currentUser = userPool.getCurrentUser();
+    if (currentUser) {
+      currentUser.getSession((err, session) => {
+        if (err) {
+          console.log('No hay sesión activa');
+          return;
+        }
+        if (session.isValid()) {
+          showApp(currentUser.getUsername());
+        }
+      });
+    }
 
     // Toggle entre login y registro
     toggleLink.addEventListener('click', (e) => {
@@ -305,11 +307,13 @@
       if (isLoginMode) {
         loginForm.classList.remove('hidden');
         registerForm.classList.add('hidden');
+        verifyForm.classList.add('hidden');
         toggleText.textContent = '¿No tienes cuenta? ';
         toggleLink.textContent = 'Regístrate aquí';
       } else {
         loginForm.classList.add('hidden');
         registerForm.classList.remove('hidden');
+        verifyForm.classList.add('hidden');
         toggleText.textContent = '¿Ya tienes cuenta? ';
         toggleLink.textContent = 'Inicia sesión aquí';
       }
@@ -317,7 +321,7 @@
     });
 
     // Login
-    loginForm.addEventListener('submit', async (e) => {
+    loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value;
       const password = document.getElementById('loginPassword').value;
@@ -326,26 +330,45 @@
       btn.disabled = true;
       btn.innerHTML = '<span class="loading"></span>';
 
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        showMessage('¡Inicio de sesión exitoso!', 'success');
-      } catch (error) {
-        console.error('Error:', error);
-        if (error.code === 'auth/invalid-credential') {
-          showMessage('Email o contraseña incorrectos', 'error');
-        } else if (error.code === 'auth/user-not-found') {
-          showMessage('Usuario no encontrado', 'error');
-        } else {
-          showMessage('Error al iniciar sesión: ' + error.message, 'error');
+      const authenticationData = {
+        Username: email,
+        Password: password,
+      };
+      
+      const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
+      
+      const userData = {
+        Username: email,
+        Pool: userPool
+      };
+      
+      const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+      
+      cognitoUser.authenticateUser(authenticationDetails, {
+        onSuccess: (result) => {
+          showMessage('¡Inicio de sesión exitoso!', 'success');
+          setTimeout(() => showApp(email), 1000);
+        },
+        onFailure: (err) => {
+          console.error('Error:', err);
+          if (err.code === 'UserNotConfirmedException') {
+            showMessage('Por favor verifica tu email primero', 'error');
+            pendingUsername = email;
+            loginForm.classList.add('hidden');
+            verifyForm.classList.remove('hidden');
+          } else if (err.code === 'NotAuthorizedException') {
+            showMessage('Email o contraseña incorrectos', 'error');
+          } else {
+            showMessage('Error: ' + err.message, 'error');
+          }
+          btn.disabled = false;
+          btn.textContent = 'Iniciar Sesión';
         }
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Iniciar Sesión';
-      }
+      });
     });
 
     // Registro
-    registerForm.addEventListener('submit', async (e) => {
+    registerForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const email = document.getElementById('registerEmail').value;
       const password = document.getElementById('registerPassword').value;
@@ -365,34 +388,89 @@
       btn.disabled = true;
       btn.innerHTML = '<span class="loading"></span>';
 
-      try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        showMessage('¡Cuenta creada exitosamente!', 'success');
-      } catch (error) {
-        console.error('Error:', error);
-        if (error.code === 'auth/email-already-in-use') {
-          showMessage('Este email ya está registrado', 'error');
-        } else if (error.code === 'auth/weak-password') {
-          showMessage('La contraseña es muy débil', 'error');
-        } else {
-          showMessage('Error al crear cuenta: ' + error.message, 'error');
+      const attributeList = [
+        new AmazonCognitoIdentity.CognitoUserAttribute({
+          Name: 'email',
+          Value: email
+        })
+      ];
+
+      userPool.signUp(email, password, attributeList, null, (err, result) => {
+        if (err) {
+          console.error('Error:', err);
+          if (err.code === 'UsernameExistsException') {
+            showMessage('Este email ya está registrado', 'error');
+          } else {
+            showMessage('Error: ' + err.message, 'error');
+          }
+          btn.disabled = false;
+          btn.textContent = 'Crear Cuenta';
+          return;
         }
-      } finally {
+        
+        pendingUsername = email;
+        showMessage('¡Cuenta creada! Revisa tu email para el código de verificación', 'success');
+        registerForm.classList.add('hidden');
+        verifyForm.classList.remove('hidden');
         btn.disabled = false;
         btn.textContent = 'Crear Cuenta';
+      });
+    });
+
+    // Verificación
+    verifyForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const code = document.getElementById('verifyCode').value;
+      const btn = document.getElementById('verifyBtn');
+
+      if (!pendingUsername) {
+        showMessage('Error: No hay usuario pendiente de verificación', 'error');
+        return;
       }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading"></span>';
+
+      const userData = {
+        Username: pendingUsername,
+        Pool: userPool
+      };
+
+      const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+
+      cognitoUser.confirmRegistration(code, true, (err, result) => {
+        if (err) {
+          console.error('Error:', err);
+          showMessage('Código incorrecto: ' + err.message, 'error');
+          btn.disabled = false;
+          btn.textContent = 'Verificar Email';
+          return;
+        }
+        
+        showMessage('¡Email verificado! Ahora puedes iniciar sesión', 'success');
+        setTimeout(() => {
+          verifyForm.classList.add('hidden');
+          loginForm.classList.remove('hidden');
+          isLoginMode = true;
+          toggleText.textContent = '¿No tienes cuenta? ';
+          toggleLink.textContent = 'Regístrate aquí';
+          document.getElementById('verifyCode').value = '';
+          btn.disabled = false;
+          btn.textContent = 'Verificar Email';
+        }, 2000);
+      });
     });
 
     // Cerrar sesión
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      try {
-        await signOut(auth);
-        document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-        clearForms();
-      } catch (error) {
-        console.error('Error:', error);
-        showMessage('Error al cerrar sesión', 'error');
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      const cognitoUser = userPool.getCurrentUser();
+      if (cognitoUser) {
+        cognitoUser.signOut();
       }
+      authContainer.classList.remove('hidden');
+      appContainer.classList.add('hidden');
+      document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+      clearForms();
     });
 
     // Cambiar color
@@ -416,20 +494,15 @@
       document.body.style.background = newColor;
     });
 
-    function showApp(user) {
+    function showApp(email) {
       authContainer.classList.add('hidden');
       appContainer.classList.remove('hidden');
-      document.getElementById('userEmail').textContent = `📧 ${user.email}`;
+      document.getElementById('userEmail').textContent = `📧 ${email}`;
     }
 
     function showMessage(text, type) {
       message.textContent = text;
       message.className = `message ${type}`;
-      setTimeout(() => {
-        if (type === 'success') {
-          clearMessage();
-        }
-      }, 3000);
     }
 
     function clearMessage() {
@@ -440,6 +513,7 @@
     function clearForms() {
       loginForm.reset();
       registerForm.reset();
+      verifyForm.reset();
       clearMessage();
     }
   </script>
