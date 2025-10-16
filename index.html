@@ -1,165 +1,446 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Página con Login Amplify</title>
-  
-  <!-- Amplify UI CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/@aws-amplify/ui@5/dist/styles.css">
+  <title>Página con Login</title>
   
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Arial', sans-serif;
       min-height: 100vh;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      margin: 0;
-      padding: 20px;
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 20px;
     }
 
-    .app-container {
+    .container {
       background: white;
       padding: 40px;
       border-radius: 15px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-      max-width: 500px;
+      max-width: 450px;
       width: 100%;
-      text-align: center;
     }
 
     h1 {
+      color: #333;
+      margin-bottom: 10px;
+      text-align: center;
+      font-size: 2rem;
+    }
+
+    .subtitle {
+      color: #666;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 0.9rem;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: #333;
+      margin-bottom: 8px;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .toggle-form {
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .toggle-form a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .toggle-form a:hover {
+      text-decoration: underline;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .message {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    .error {
+      background-color: #fee;
+      color: #c33;
+      border: 1px solid #fcc;
+    }
+
+    .success {
+      background-color: #efe;
+      color: #3c3;
+      border: 1px solid #cfc;
+    }
+
+    .info {
+      background-color: #eef;
+      color: #33c;
+      border: 1px solid #ccf;
+    }
+
+    .app-content {
+      text-align: center;
+    }
+
+    .app-content h2 {
       color: #333;
       margin-bottom: 20px;
     }
 
     .user-info {
-      background: #f5f5f5;
+      background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
       padding: 20px;
       border-radius: 10px;
-      margin: 20px 0;
+      margin-bottom: 25px;
+      color: #333;
     }
 
-    .user-info p {
+    .user-info strong {
+      color: #667eea;
+    }
+
+    #changeColorBtn {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      margin-bottom: 10px;
+    }
+
+    #logoutBtn {
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .password-requirements {
+      font-size: 0.8rem;
       color: #666;
-      margin: 10px 0;
-    }
-
-    button {
-      background-color: #667eea;
-      color: white;
-      border: none;
-      padding: 15px 40px;
-      border-radius: 50px;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      margin: 10px;
-      transition: all 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #5568d3;
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    #content {
-      display: none;
-    }
-
-    #content.show {
-      display: block;
-    }
-
-    /* Personalizar el formulario de Amplify */
-    amplify-authenticator {
-      --amplify-colors-background-primary: white;
-      --amplify-colors-brand-primary: #667eea;
+      margin-top: 5px;
+      padding-left: 5px;
     }
   </style>
 </head>
 <body>
-  <!-- Amplify maneja TODO el login automáticamente -->
-  <amplify-authenticator>
-    <div class="app-container" id="content">
-      <h1>🎉 PAGINA SENCILLA</h1>
-      
-      <div class="user-info">
-        <p><strong>Has iniciado sesión correctamente</strong></p>
-        <p id="userEmail">Email: Cargando...</p>
+  <!-- Formulario de Login/Registro -->
+  <div id="authContainer" class="container">
+    <h1>🔐 PAGINA SENCILLA</h1>
+    <p class="subtitle">Inicia sesión o regístrate para continuar</p>
+    
+    <div id="message"></div>
+
+    <!-- Formulario de Login -->
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="loginEmail">📧 Email</label>
+        <input type="email" id="loginEmail" required placeholder="tu@email.com">
       </div>
+      <div class="form-group">
+        <label for="loginPassword">🔒 Contraseña</label>
+        <input type="password" id="loginPassword" required placeholder="Tu contraseña">
+      </div>
+      <button type="submit" id="loginBtn">Iniciar Sesión</button>
+    </form>
 
-      <button id="changeColorBtn">Cambiar Color de Fondo</button>
-      <button onclick="signOut()">Cerrar Sesión</button>
+    <!-- Formulario de Registro -->
+    <form id="registerForm" class="hidden">
+      <div class="form-group">
+        <label for="registerEmail">📧 Email</label>
+        <input type="email" id="registerEmail" required placeholder="tu@email.com">
+      </div>
+      <div class="form-group">
+        <label for="registerPassword">🔒 Contraseña</label>
+        <input type="password" id="registerPassword" required minlength="8" placeholder="Mínimo 8 caracteres">
+        <div class="password-requirements">Mínimo 8 caracteres</div>
+      </div>
+      <div class="form-group">
+        <label for="confirmPassword">🔒 Confirmar Contraseña</label>
+        <input type="password" id="confirmPassword" required minlength="8" placeholder="Repite tu contraseña">
+      </div>
+      <button type="submit" id="registerBtn">Crear Cuenta</button>
+    </form>
+
+    <div class="toggle-form">
+      <span id="toggleText">¿No tienes cuenta? </span>
+      <a href="#" id="toggleLink">Regístrate aquí</a>
     </div>
-  </amplify-authenticator>
+  </div>
 
-  <!-- Amplify Libraries -->
-  <script src="https://unpkg.com/@aws-amplify/ui@5/dist/aws-amplify-ui.js"></script>
-  <script src="https://unpkg.com/aws-amplify@5/dist/aws-amplify.js"></script>
+  <!-- Contenido de la App (después del login) -->
+  <div id="appContainer" class="container hidden">
+    <div class="app-content">
+      <h2>🎉 ¡Bienvenido!</h2>
+      <div class="user-info">
+        <p><strong>✅ Sesión iniciada correctamente</strong></p>
+        <p id="userEmail"></p>
+      </div>
+      <button id="changeColorBtn">🎨 Cambiar Color de Fondo</button>
+      <button id="logoutBtn">🚪 Cerrar Sesión</button>
+    </div>
+  </div>
 
-  <script>
-    const { Amplify } = window.aws_amplify;
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+    // Configuración de Firebase (usa tu propia configuración)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDummy-Key-Replace-With-Real",
+      authDomain: "tu-proyecto.firebaseapp.com",
+      projectId: "tu-proyecto-id",
+      storageBucket: "tu-proyecto.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:abcdef123456"
+    };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Elementos del DOM
+    const authContainer = document.getElementById('authContainer');
+    const appContainer = document.getElementById('appContainer');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const toggleLink = document.getElementById('toggleLink');
+    const toggleText = document.getElementById('toggleText');
+    const message = document.getElementById('message');
     
-    // CONFIGURACIÓN CON TUS IDs REALES
-    Amplify.configure({
-      Auth: {
-        Cognito: {
-          userPoolId: 'us-east-1_juoZIaN09',
-          userPoolClientId: '767u280f6hkmc7p28b3d0i0u5i',
-          region: 'us-east-1'
-        }
-      }
-    });
+    let isLoginMode = true;
 
-    // Detectar cuando el usuario inicia sesión
-    const authenticator = document.querySelector('amplify-authenticator');
-    const content = document.getElementById('content');
-    
-    authenticator.addEventListener('authStateChange', async (event) => {
-      if (event.detail === 'signedIn') {
-        content.classList.add('show');
-        
-        // Obtener info del usuario
-        try {
-          const { Amplify } = window.aws_amplify;
-          const user = await Amplify.Auth.getCurrentUser();
-          document.getElementById('userEmail').textContent = `Email: ${user.signInDetails.loginId}`;
-        } catch (error) {
-          console.log('Error obteniendo usuario:', error);
-          document.getElementById('userEmail').textContent = 'Usuario logueado';
-        }
+    // Verificar estado de autenticación
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        showApp(user);
       } else {
-        content.classList.remove('show');
+        authContainer.classList.remove('hidden');
+        appContainer.classList.add('hidden');
       }
     });
 
-    // Cambiar color de fondo
+    // Toggle entre login y registro
+    toggleLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      isLoginMode = !isLoginMode;
+      
+      if (isLoginMode) {
+        loginForm.classList.remove('hidden');
+        registerForm.classList.add('hidden');
+        toggleText.textContent = '¿No tienes cuenta? ';
+        toggleLink.textContent = 'Regístrate aquí';
+      } else {
+        loginForm.classList.add('hidden');
+        registerForm.classList.remove('hidden');
+        toggleText.textContent = '¿Ya tienes cuenta? ';
+        toggleLink.textContent = 'Inicia sesión aquí';
+      }
+      clearMessage();
+    });
+
+    // Login
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('loginBtn');
+      
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading"></span>';
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        showMessage('¡Inicio de sesión exitoso!', 'success');
+      } catch (error) {
+        console.error('Error:', error);
+        if (error.code === 'auth/invalid-credential') {
+          showMessage('Email o contraseña incorrectos', 'error');
+        } else if (error.code === 'auth/user-not-found') {
+          showMessage('Usuario no encontrado', 'error');
+        } else {
+          showMessage('Error al iniciar sesión: ' + error.message, 'error');
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Iniciar Sesión';
+      }
+    });
+
+    // Registro
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('registerEmail').value;
+      const password = document.getElementById('registerPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const btn = document.getElementById('registerBtn');
+
+      if (password !== confirmPassword) {
+        showMessage('Las contraseñas no coinciden', 'error');
+        return;
+      }
+
+      if (password.length < 8) {
+        showMessage('La contraseña debe tener al menos 8 caracteres', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading"></span>';
+
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        showMessage('¡Cuenta creada exitosamente!', 'success');
+      } catch (error) {
+        console.error('Error:', error);
+        if (error.code === 'auth/email-already-in-use') {
+          showMessage('Este email ya está registrado', 'error');
+        } else if (error.code === 'auth/weak-password') {
+          showMessage('La contraseña es muy débil', 'error');
+        } else {
+          showMessage('Error al crear cuenta: ' + error.message, 'error');
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Crear Cuenta';
+      }
+    });
+
+    // Cerrar sesión
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        clearForms();
+      } catch (error) {
+        console.error('Error:', error);
+        showMessage('Error al cerrar sesión', 'error');
+      }
+    });
+
+    // Cambiar color
     document.getElementById('changeColorBtn').addEventListener('click', () => {
-      const colors = ['linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
-                      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                      'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                      'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                      'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'];
+      const colors = [
+        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+        'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+        'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
+      ];
       
       const currentBg = document.body.style.background;
       let newColor = colors[Math.floor(Math.random() * colors.length)];
       
-      while (newColor === currentBg) {
+      while (newColor === currentBg && colors.length > 1) {
         newColor = colors[Math.floor(Math.random() * colors.length)];
       }
       
       document.body.style.background = newColor;
     });
 
-    // Función para cerrar sesión
-    async function signOut() {
-      const { Amplify } = window.aws_amplify;
-      await Amplify.Auth.signOut();
+    function showApp(user) {
+      authContainer.classList.add('hidden');
+      appContainer.classList.remove('hidden');
+      document.getElementById('userEmail').textContent = `📧 ${user.email}`;
+    }
+
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = `message ${type}`;
+      setTimeout(() => {
+        if (type === 'success') {
+          clearMessage();
+        }
+      }, 3000);
+    }
+
+    function clearMessage() {
+      message.textContent = '';
+      message.className = 'message';
+    }
+
+    function clearForms() {
+      loginForm.reset();
+      registerForm.reset();
+      clearMessage();
     }
   </script>
 </body>
